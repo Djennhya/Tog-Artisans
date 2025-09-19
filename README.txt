@@ -53,10 +53,5 @@ TogArtisans/
 
 Les contributions sont les bienvenues ! Merci de créer une issue ou une pull request pour toute proposition d’amélioration ou de correction.
 
-## Licence
-
-Ce projet est sous licence MIT.
-
----
 
 **Tog'Artisans – Valorisons l’artisanat local !**
