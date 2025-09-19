@@ -1,6 +1,6 @@
 # Tog'Artisans
 
-Tog'Artisans est une application web simple en PHP permettant de valoriser la vente des produits artisanaux locaux. Les artisans peuvent présenter et vendre leurs créations, et les utilisateurs peuvent découvrir et acheter des produits uniques et faits main.
+Tog'Artisans est une plateforme e-commerce intelligente dédiée à la digitalisation et à la valorisation de l’artisanat local. Grâce aux technologies émergentes telles que la réalité augmentée pour visualiser les produits, l’authentification forte (2FA) pour la sécurité des comptes, et un chatbot pour accompagner les clients dans leurs choix, elle offre une expérience innovante et sécurisée à la fois pour les artisans et les acheteurs.
 
 ## Fonctionnalités principales
 
