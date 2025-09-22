@@ -11,9 +11,9 @@
           <!-- BEGIN SIDEBAR -->
           <div class="sidebar col-md-3 col-sm-3">
             <ul class="list-group margin-bottom-25 sidebar-menu">
-              <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Connexion</a></li>
-              <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Inscription</a></li>
-              <li class="list-group-item clearfix"><a href="javascript:;"><i class="fa fa-angle-right"></i> Nous contacter</a></li>
+              <li class="list-group-item clearfix"><a href="login.php"><i class="fa fa-angle-right"></i> Connexion</a></li>
+              <li class="list-group-item clearfix"><a href="register.php"><i class="fa fa-angle-right"></i> Inscription</a></li>
+              <li class="list-group-item clearfix"><a href="contact.php"><i class="fa fa-angle-right"></i> Nous contacter</a></li>
             </ul>
           </div>
           <!-- END SIDEBAR -->

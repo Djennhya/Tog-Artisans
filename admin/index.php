@@ -18,7 +18,7 @@
 											<div class="col-7 d-flex align-items-center">
 												<div class="numbers">
 													<p class="card-category">Clients</p>
-													<h4><?php $sql = "SELECT COUNT(*) AS total FROM users";
+													<h4><?php $sql = "SELECT COUNT(*) AS total FROM users WHERE role = 'client'";
 													$result = mysqli_query($link, $sql);
 													$row = mysqli_fetch_assoc($result);
 													$total_users = $row['total'];
@@ -87,7 +87,14 @@
 											<div class="col-7 d-flex align-items-center">
 												<div class="numbers">
 													<p class="card-category">Revenus</p>
-													<h4 class="card-title">500 FCFA</h4>
+													<h4>
+													<?php 
+													$sql = "SELECT SUM(total) AS revenus FROM commandes";
+													$result = mysqli_query($link, $sql);
+													$row = mysqli_fetch_assoc($result);
+													echo $row['revenus'] ? $row['revenus'] . " FCFA" : "0 FCFA";
+													?>
+													</h4>
 												</div>
 											</div>
 										</div>
@@ -106,7 +113,7 @@
 											<div class="col-7 d-flex align-items-center">
 												<div class="numbers">
 													<p class="card-category">Artisans</p>
-													<h4><?php $sql = "SELECT COUNT(*) AS total FROM users";
+													<h4><?php $sql = "SELECT COUNT(*) AS total FROM users WHERE role = 'artisan'";
 													$result = mysqli_query($link, $sql);
 													$row = mysqli_fetch_assoc($result);
 													$total_artisans = $row['total'];
@@ -129,7 +136,7 @@
 											<div class="col-7 d-flex align-items-center">
 												<div class="numbers">
 													<p class="card-category">Livreurs</p>
-													<h4><?php $sql = "SELECT COUNT(*) AS total FROM users";
+													<h4><?php $sql = "SELECT COUNT(*) AS total FROM users WHERE role = 'livreur'";
 													$result = mysqli_query($link, $sql);
 													$row = mysqli_fetch_assoc($result);
 													$total_livreurs = $row['total'];
@@ -175,11 +182,11 @@
 											<div class="col-7 d-flex align-items-center">
 												<div class="numbers">
 													<p class="card-category">Livraisons</p>
-													<h4><?php $sql = "SELECT COUNT(*) AS total FROM commandes";
+													<h4><?php $sql = "SELECT COUNT(*) AS total FROM livraisons";
 													$result = mysqli_query($link, $sql);
 													$row = mysqli_fetch_assoc($result);
-													$total_commandes = $row['total'];
-													echo $total_commandes; ?></h4>
+													$total_livraison = $row['total'];
+													echo $total_livraison; ?></h4>
 												</div>
 											</div>
 										</div>

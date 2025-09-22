@@ -87,7 +87,7 @@
                       <a class="dropdown-toggle" data-toggle="dropdown" href="">Connexion <span class="caret"></span></a>
                       <ul class="dropdown-menu">
                         <li><a href="admin/login.php">Admin</a></li>
-                        <li><a href="user/login.php">User</a></li>
+                        <li><a href="login.php">User</a></li>
                         <li><a href="artisan/login.php">Artisan</a></li>
                       </ul>
                       </li>

@@ -78,8 +78,8 @@
 						</li>
 						<li class="nav-item">
 							<a href="revenus.php">
-								<i class="la la-dollar"></i>
-								<p>Revenus</p>
+								<i class="la la-car"></i>
+								<p>Livraisons</p>
 								<span class="badge badge-count"></span>
 							</a>
 						</li>

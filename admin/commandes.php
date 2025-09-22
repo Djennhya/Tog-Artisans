@@ -1,5 +1,6 @@
 <?php include("header.php"); ?>
 <?php include("sidebar.php"); ?>
+<?php include("config.php"); ?>
 			<div class="main-panel">
 				<div class="content">
 					<div class="container-fluid">
@@ -15,56 +16,59 @@
                                             <table id="add-row" class="display table table-striped table-hover" >
                                                 <thead>
                                                     <tr>
-                                                        <th>ID</th>
+                                                        <th>Id</th>
+                                                        <th>Id prod</th>
                                                         <th>Client</th>
-                                                        <th>Article</th>
+                                                        <th>Artisan</th>
+                                                        <th>Livreur</th>
                                                         <th>Quantité</th>
                                                         <th>Prix total</th>
+                                                        <th>Statut</th>
                                                         <th>Date de commande</th>
-                                                        <th style="width: 10%">Action</th>
+                                                        <th style="width: 20%">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Lady D</td>
-                                                        <td>Vase en céramique</td>
-                                                        <td>2</td>
-                                                        <td>50.00 FCFA</td>
-                                                        <td>20-09-2025</td>
-                                                        <td>
-                                                            <div class="form-button-action">
-                                                                <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Voir Détails">
-                                                                    <i class="fa fa-eye"></i>
-                                                                </button>
-                                                                <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Supprimer">
-                                                                    <i class="fa fa-times"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>TOUKOULA Josée</td>
-                                                        <td>Collier en perles</td>
-                                                        <td>1</td>
-                                                        <td>40.00 FCFA</td>
-                                                        <td>21-09-2025</td>
-                                                        <td>
-                                                            <div class="form-button-action">
-                                                                <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Voir Détails">
-                                                                    <i class="fa fa-eye"></i>
-                                                                </button>
-                                                                <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Supprimer">
-                                                                    <i class="fa fa-times"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+<?php
+$sql = "SELECT * FROM commandes";
+$result = mysqli_query($link, $sql);
+if (mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>";
+        echo "<td>" . $row['id_commande'] . "</td>";
+        echo "<td>" . $row['id_product'] . "</td>";
+        echo "<td>" . $row['id_client'] . "</td>";
+        echo "<td>" . $row['id_artisan'] . "</td>";
+        echo "<td>" . $row['id_livreur'] . "</td>";
+        echo "<td>" . $row['quantity'] . "</td>";
+        echo "<td>" . $row['total_price'] . "</td>";
+        echo "<td>" . $row['status'] . "</td>";
+        echo "<td>" . $row['date_commande'] . "</td>";
+        echo "<td><a href='edit_commande.php?id=" . $row['id'] . "' class='btn btn-primary btn-sm'>Edit</a> ";
+        echo "<a href='delete_commande.php?id=" . $row['id'] . "' class='btn btn-danger btn-sm'>Delete</a></td>";
+        echo "</tr>";
+    }
+} else {
+    echo "<tr><td colspan='10'>Aucune commande trouvée</td></tr>";
+}
+mysqli_close($link);
+?>
                                                 </tbody>
                                             </table>
                                         </div>
-</body>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<?php include("footer.php"); ?>
+            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 <script src="assets/js/core/jquery.3.2.1.min.js"></script>
 <script src="assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
 <script src="assets/js/core/popper.min.js"></script>

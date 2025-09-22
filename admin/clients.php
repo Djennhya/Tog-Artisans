@@ -31,7 +31,7 @@
 												require_once "config.php";
 
 												// Récupérer tous les clients depuis la base de données
-												$sql = "SELECT id_user, nom_user, email_user, phone_user, date_inscription, adresse_user FROM users";
+												$sql = "SELECT id_user, nom_user, email_user, phone_user, date_inscription, adresse_user FROM users WHERE role = 'client'";
 												$result = mysqli_query($link, $sql);
 
 												if (mysqli_num_rows($result) > 0) {
