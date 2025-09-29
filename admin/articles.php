@@ -11,6 +11,11 @@
                                     <div class="card-header">
                                         <div class="card-title">Tous les articles disponibles sur la plateforme</div>
                                     </div>
+									<!-- un bouton pour ajouter un nouvel article -->
+									<div class="card-body">
+										<a href="add_articles.php" class="btn btn-success" style="margin-bottom: 10px;">Ajouter un nouveau produit</a>
+									</div>
+
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table id="add-row" class="display table table-striped table-hover" >

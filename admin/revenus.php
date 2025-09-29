@@ -1,5 +1,6 @@
 <?php include("header.php"); ?>
 <?php include("sidebar.php"); ?>
+<?php include("config.php"); ?>
 			<div class="main-panel">
 				<div class="content">
 					<div class="container-fluid">
@@ -15,32 +16,52 @@
                                             <table id="add-row" class="display table table-striped table-hover" >
                                                 <thead>
                                                     <tr>
-                                                        <th>ID</th>
-                                                        <th>Nom de l'article</th>
+                                                        <th>Id</th>
+                                                        <th>Id article</th>
+                                                        <th>Nom article</th>
+                                                        <th>Prix unitaire</th>
                                                         <th>Quantité vendue</th>
                                                         <th>Revenu total</th>
                                                         <th>Date de calcul</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Vase en céramique</td>
-                                                        <td>10</td>
-                                                        <td>250.00 FCFA</td>
-                                                        <td>30-09-2025</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Collier en perles</td>
-                                                        <td>5</td>
-                                                        <td>200.00 FCFA</td>
-                                                        <td>30-09-2025</td>
-                                                    </tr>
+<?php
+require_once "config.php";
+$sql = "SELECT id_revenu, id_product, nom_product, prix, quantite_totale, 
+               (prix * quantite_totale) AS revenu_total, date_calcule 
+        FROM revenus";
+$result = mysqli_query($link, $sql);
+if (mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>";
+        echo "<td>" . $row['id_revenu'] . "</td>";
+        echo "<td>" . $row['id_product'] . " - " ;
+        echo "<td>" . htmlspecialchars($row['nom_product']) . "</td>";
+        echo "<td>" . $row['prix'] . "</td>";
+        echo "<td>" . $row['revenu_total'] . "</td>";
+        echo "<td>" . $row['date_calcule'] . "</td>";
+        echo "</tr>";
+    }
+} else {
+    echo "<tr><td colspan='5'>Aucun revenu trouvé</td></tr>";
+}
+mysqli_close($link);
+?>
                                                 </tbody>
                                             </table>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+
 <script src="assets/js/core/jquery.3.2.1.min.js"></script>
 <script src="assets/js/plugin/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
 <script src="assets/js/core/popper.min.js"></script>

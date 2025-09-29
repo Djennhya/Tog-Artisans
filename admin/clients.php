@@ -11,6 +11,10 @@
 									<div class="card-header">
 										<div class="card-title">Tous les clients inscrits sur la plateforme</div>
 									</div>
+									<!-- un bouton pour ajouter un nouveau client -->
+									<div class="card-body">
+										<a href="add_clients.php" class="btn btn-success" style="margin-bottom: 10px;">Ajouter un nouveau client</a>
+									</div>
 									<div class="card-body">
 										<div class="table-responsive">
 											<table id="add-row" class="display table table-striped table-hover" >
