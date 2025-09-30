@@ -11,6 +11,10 @@
 									<div class="card-header">
 										<div class="card-title">Tous les artisans de la plateforme</div>
 									</div>
+									<!-- un bouton pour ajouter un nouvel artisan -->
+									<div class="card-body">
+										<a href="add_artisans.php" class="btn btn-success" style="margin-bottom: 10px;">Ajouter un nouvel artisan</a>
+									</div>
 									<div class="card-body">
 										<div class="table-responsive">
 											<table id="add-row" class="display table table-striped table-hover" >

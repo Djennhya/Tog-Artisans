@@ -11,6 +11,10 @@
                                     <div class="card-header">
                                         <div class="card-title">Toutes les catégories d'articles sur la plateforme</div>
                                     </div>
+									<!-- un bouton pour ajouter une nouvelle catégorie -->
+									<div class="card-body">
+										<a href="add_cat.php" class="btn btn-success" style="margin-bottom: 10px;">Ajouter une nouvelle catégorie</a>
+									</div>
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table id="add-row" class="display table table-striped table-hover" >

@@ -11,6 +11,10 @@
                                     <div class="card-header">
                                         <div class="card-title">Tous les livreurs de la plateforme</div>
                                     </div>
+									<!-- un bouton pour ajouter un nouveau livreur -->
+									<div class="card-body">
+										<a href="add_livreurs.php" class="btn btn-success" style="margin-bottom: 10px;">Ajouter un nouveau livreur</a>
+									</div>
                                     <div class="card-body">
                                         <div class="table-responsive">
                                             <table id="add-row" class="display table table-striped table-hover" >
