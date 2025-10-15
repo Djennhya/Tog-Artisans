@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 // Paramètres de connexion à la base de données
 $host = "localhost";       // Hôte MySQL (souvent localhost)
 $dbname = "togartisans"; // Nom de ta base
@@ -34,4 +33,3 @@ date_default_timezone_set("Africa/Lome");
 
 // Exemple de constante globale
 define("SITE_NAME", "Administration - Artisapp");
-

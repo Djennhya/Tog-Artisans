@@ -137,8 +137,6 @@
                 <li><a href="checkout.php">Checkout</a></li>
                 <li><a href="about.php">A Propos</a></li>
                 <li><a href="contact.php">Contact</a></li>
-                <li><a href="login.php">Connexion</a></li>
-                <li><a href="signup.php">Inscription</a></li>
                 <li><a href="profile.php">Mon profil</a></li>
                 <li><a href="wishlist.php">Mes préférés</a></li>
                 <li><a href="checkout.php">Mes commandes</a></li>
