@@ -18,10 +18,10 @@ session_start();
                 <div class="table-wrapper-responsive">
                 <table summary="Shopping cart">
                   <tr>
-                    <th class="goods-page-image">Image product</th>
+                    <th class="goods-page-image">Image</th>
                     <th class="goods-page-name">Nom produit</th>
-                    <th class="goods-page-quantity">Qté</th>
-                    <th class="goods-page-category">Catégorie</th>
+                    <th class="goods-page-quantity">Quantité</th>
+                    <th class="goods-page-shop">Boutique</th>
                     <th class="goods-page-delete">Supprimer</th>
                     <th class="goods-page-price">Prix</th>
                     <th class="goods-page-total" colspan="2">Total</th>
@@ -45,7 +45,10 @@ if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
         }
         $quantity = $item['quantity'];
         $prix = $item['prix'];
-        $sql = "SELECT p.*, c.nom_cat AS nom_cat FROM products p LEFT JOIN category c ON p.id_cat = c.id_cat WHERE p.id_product = $id_product";
+        $sql =  "SELECT p.*, s.nom_shop AS nom_shop
+                FROM products p
+                LEFT JOIN shop s ON p.id_shop = s.id_shop
+                WHERE p.id_product = $id_product";
         $result = mysqli_query($conn, $sql);
         if ($product = mysqli_fetch_assoc($result)) {
             $total = $prix * $quantity;
@@ -63,7 +66,7 @@ echo "<tr>
       <button type=\"submit\" name=\"action\" value=\"increment\" class=\"btn btn-xs btn-default\">+</button>
       </form>
     </td>
-    <td class='goods-page-category'>".htmlspecialchars($product['nom_cat'])."</td>
+    <td class='goods-page-shop'>".htmlspecialchars($product['nom_shop'] ?? 'N/A')."</td>
      <td>
         <form action=\"update_cart.php\" method=\"post\" style=\"display:inline;\">
         <input type=\"hidden\" name=\"id_product\" value=\"".htmlspecialchars($product['id_product'])."\">
@@ -106,7 +109,7 @@ echo "<tr>
 <?php if (!isset($_SESSION['user_id'])): ?>
     <a href="login.php" class="btn btn-primary">Commander <i class="fa fa-check"></i></a>
 <?php else: ?>
-    <form action="valider_commande.php" method="post" style="display:inline;">
+    <form action="checkout.php" method="post" style="display:inline;">
         <button class="btn btn-primary" type="submit">Commander <i class="fa fa-check"></i></button>
     </form>
 <?php endif; ?>

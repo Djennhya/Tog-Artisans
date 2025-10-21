@@ -91,7 +91,11 @@
                         <li><a href="artisan/login.php">Artisan</a></li>
                       </ul>
                       </li>
-                        <li><a href="checkout.php">Mon compte</a></li>
+                        <!-- Quand je suis connecté je dois voir mon nom et mes informations -->
+                         <li><a href="profile.php">Mon compte</a></li>
+                         <li><a href="cart.php">Mon panier</a></li>
+                         <li><a href="logout.php">Déconnexion</a></li>
+
                     </ul>
                 </div>
                 <!-- END TOP BAR MENU -->
@@ -126,23 +130,7 @@
             <li><a href="products.php">Produits</a></li>
             <li><a href="contact.php">Contact</a></li>
             <li><a href="about.php">A Propos</a></li>
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="javascript:;">
-                Pages
-              </a>
-              <ul class="dropdown-menu">
-                <li class="active"><a href="products.php">Produits</a></li>
-                <li><a href="product.php">Détail produit</a></li>
-                <li><a href="cart.php">Panier</a></li>
-                <li><a href="checkout.php">Checkout</a></li>
-                <li><a href="about.php">A Propos</a></li>
-                <li><a href="contact.php">Contact</a></li>
-                <li><a href="profile.php">Mon profil</a></li>
-                <li><a href="wishlist.php">Mes préférés</a></li>
-                <li><a href="checkout.php">Mes commandes</a></li>
-                <li><a href="account.php">Mon compte</a></li>
-              </ul>
-            </li>
+            <li><a href="shops_list.php">Nos boutiques</a></li>
            <li><a href="chatbot.php">Assistance</a></li>
 
             <!-- BEGIN TOP SEARCH -->

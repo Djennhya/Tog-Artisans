@@ -45,26 +45,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (mysqli_query($conn, $sql_insert)) {
 
                 // ✅ ENVOI SMS VIA AFRICA'S TALKING
-                require_once 'vendor/autoload.php';
+                // autoload and use are already declared at the top of this file
 
-                $username   = "sandbox"; // ⚠️ à remplacer par ton username Africa's Talking
-                $apiKey     = "atsk_b0b7dd81f0e75bef264e4ea63ad1810adb47be42bbc00ee8573ca7db2a5a8b1ecbf897f3"; // ⚠️ mets ta clé API
-                $AT         = new AfricasTalking($username, $apiKey);
+                $username = 'Djennhya';   // remplace
+                $apiKey   = 'atsk_0452b58ae521a87fd519a6ca27ad85973d62932e3929dbad012bc9a32a41f8742a787ac0';     // remplace
 
-                $sms        = $AT->sms();
-                $to         = "+228" . $phone; // Format international
                 try {
-                    $sms->send([
-                        'to'      => $to,
-                        'message' => "Bonjour $nom_user, votre code de vérification est : $code_2fa",
+                    $AT = new AfricasTalking($username, $apiKey);
+                    $sms = $AT->sms();
+
+                    $to = $phone; // doit être en format international, ex: +22890123456
+                    $message_sms = "Tog'Artisans - Votre code de confirmation : $code_2fa";
+
+                    $result = $sms->send([
+                        'to' => $to,
+                        'message' => $message_sms,
+                        'from' => 'TogArtisans' // optionnel, selon ton compte
                     ]);
 
-                    $_SESSION['register_success'] = "Inscription réussie! Votre code 2FA a été envoyé par SMS.";
-                    header('Location: login.php');
-                    exit;
-                } catch (Exception $e) {
-                    $message = "Erreur lors de l'envoi du SMS : " . $e->getMessage();
+                    // optionnel : log / vérifier $result
+                } catch (\Exception $e) {
+                    // gérer l'erreur (log, message utilisateur, fallback)
+                    error_log("SMS send error: " . $e->getMessage());
                 }
+
+                $_SESSION['register_success'] = "Inscription réussie! Votre code 2FA a été envoyé par SMS.";
+                header('Location: login.php');
+                exit;
 
             } else {
                 $message = "Erreur lors de l'inscription. Veuillez réessayer.";
@@ -105,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="register-container">
         <h2>Inscription a Tog'Artisans</h2>
-        <form id="registerForm" method="POST" action="register.php">
+        <form id="registerForm" method="POST" action="">
             <div class="form-group">
                 <label for="nom_user">Nom:</label>
                 <input type="text" class="form-control" id="nom_user" name="nom_user" required>
@@ -115,14 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" class="form-control" id="email" name="email">
             </div>
             <div class="form-group">
-                <label for="phone">Numéro de téléphone (Togo):</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">+228</span>
-                    </div>
-                    <input type="text" class="form-control" id="phone" name="phone" required pattern="[9][0-9]{7}" placeholder="ex: 90000000">
-                </div>
-                <small class="form-text text-muted">Numéro à 8 chiffres commençant par 9.</small>
+                <label for="phone">Téléphone (Togo, ex: +22890123456)</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required pattern="^\+228[0-9]{8}$">
             </div>
             <div class="form-group">
                 <label for="password">Mot de passe:</label>
@@ -160,3 +161,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php include("footer.php"); ?>
 <?php
+// ...existing code...
+$phone = trim($phone);
+// Supprime tout sauf chiffres et +
+$phone = preg_replace('/[^\d+]/', '', $phone);
+// Si l'utilisateur a saisi sans indicatif, ajoute +228 si c'est un numéro togolais
+if (!preg_match('/^\+/', $phone)) {
+    // tentative : si 8 chiffres, on le considère comme local et on préfixe +228
+    $digits = preg_replace('/\D/', '', $phone);
+    if (strlen($digits) === 8) {
+        $phone = '+228' . $digits;
+    }
+}
+// validation finale
+if (!preg_match('/^\+228[0-9]{8}$/', $phone)) {
+    $message = "Numéro invalide. Utilisez le format +228XXXXXXXX.";
+} else {
+    // continuer l'insertion / envoi SMS
+}
