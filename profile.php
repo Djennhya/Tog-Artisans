@@ -1,29 +1,60 @@
 <!-- mon profil utilisateur et modification et mes historiques de commandes -->
 <?php
 require_once "admin/config.php";
+require_once __DIR__ . '/includes/google2fa.php';
 include("header.php");
+
+if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 if (!isset($_SESSION['user_id'])) {
-    echo "<div class='container my-5'><p class='text-center text-danger'>Vous devez être connecté pour voir votre profil.</p></div>";
-    include("footer.php");
+    header('Location: login.php');
     exit;
 }
-$user_id = $_SESSION['user_id'];
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "togartisans";
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-if (!$conn) {
-    die("Erreur de connexion à la base de données : " . mysqli_connect_error());
+
+$user_id = (int) $_SESSION['user_id'];
+$res = mysqli_query($link, "SELECT ga_secret, ga_enabled, nom_user FROM users WHERE id_user = $user_id");
+$user = mysqli_fetch_assoc($res);
+
+// génération du secret temporaire si non présent
+if (empty($user['ga_secret'])) {
+    $tfa = tfa_instance();
+    $secret = $tfa->createSecret(160);
+    $_SESSION['ga_pending_secret'] = $secret;
+} else {
+    $secret = $user['ga_secret'];
 }
-// Récupérer les informations de l'utilisateur
-$user_sql = "SELECT * FROM users WHERE id_user = $user_id";
-$user_res = mysqli_query($conn, $user_sql);
-$user = mysqli_fetch_assoc($user_res);
-if (!$user) {
-    echo "<div class='container my-5'><p class='text-center text-danger'>Utilisateur introuvable.</p></div>";
-    include("footer.php");
-    exit;
+
+$qrImage = '';
+if (!empty($secret)) {
+    $tfa = tfa_instance();
+    $label = ($user['nom_user'] ?? 'user') . '@TogArtisans';
+    $qrImage = $tfa->getQRCodeImageAsDataUri($label, $secret);
+}
+
+// Traitement activation/desactivation
+$msg = $err = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['confirm_ga'])) {
+        $code = trim($_POST['code'] ?? '');
+        $secretToVerify = $_SESSION['ga_pending_secret'] ?? $secret;
+        $tfa = tfa_instance();
+        if ($tfa->verifyCode($secretToVerify, $code, 1)) {
+            $secret_esc = mysqli_real_escape_string($link, $secretToVerify);
+            mysqli_query($link, "UPDATE users SET ga_secret = '{$secret_esc}', ga_enabled = 1 WHERE id_user = $user_id");
+            unset($_SESSION['ga_pending_secret']);
+            $msg = "2FA activé avec succès.";
+            // rafraîchir
+            $user['ga_enabled'] = 1;
+            $user['ga_secret'] = $secretToVerify;
+        } else {
+            $err = "Code invalide. Réessayez.";
+        }
+    } elseif (isset($_POST['disable_ga'])) {
+        // optionnel: vérifier mot de passe avant désactivation
+        mysqli_query($link, "UPDATE users SET ga_secret = NULL, ga_enabled = 0 WHERE id_user = $user_id");
+        $msg = "2FA désactivé.";
+        $user['ga_enabled'] = 0;
+        $user['ga_secret'] = null;
+    }
 }
 ?>
 <div class="container my-5">
@@ -77,6 +108,36 @@ if (!$user) {
         <?php else: ?>
             <p>Aucune commande passée pour le moment.</p>
         <?php endif; ?>
+    </div>
+    <div class="mt-5">
+        <h1>Authentification à deux facteurs (Google Authenticator)</h1>
+        <?php if ($msg) echo "<div class='alert alert-success'>".htmlspecialchars($msg)."</div>"; ?>
+        <?php if ($err) echo "<div class='alert alert-danger'>".htmlspecialchars($err)."</div>"; ?>
+
+        <div class="card">
+            <div class="card-header">Configurer 2FA</div>
+            <div class="card-body">
+                <?php if (!empty($user['ga_enabled'])): ?>
+                    <p>2FA activé pour votre compte.</p>
+                    <form method="post" onsubmit="return confirm('Confirmer la désactivation ?');">
+                        <button type="submit" name="disable_ga" class="btn btn-danger">Désactiver 2FA</button>
+                    </form>
+                <?php else: ?>
+                    <p>Scannez ce QR dans Google Authenticator ou entrez la clé manuellement, puis saisissez le code :</p>
+                    <?php if ($qrImage): ?>
+                        <img src="<?= $qrImage ?>" alt="QR Code" style="max-width:200px;">
+                        <p>Clé secrète : <strong><?= htmlspecialchars($secret) ?></strong></p>
+                    <?php endif; ?>
+                    <form method="post">
+                        <div class="form-group">
+                            <label>Code généré par l'application</label>
+                            <input type="text" name="code" class="form-control" maxlength="6" required>
+                        </div>
+                        <button type="submit" name="confirm_ga" class="btn btn-primary">Activer 2FA</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 </div>
 <?php

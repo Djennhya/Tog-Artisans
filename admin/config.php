@@ -1,5 +1,9 @@
 <?php
-session_start();
+// Démarrer la session au tout début
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Paramètres de connexion à la base de données
 $host = "localhost";       // Hôte MySQL (souvent localhost)
 $dbname = "togartisans"; // Nom de ta base

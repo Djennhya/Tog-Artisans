@@ -1,0 +1,51 @@
+2025-10-30T00:48:50+00:00 ERROR AT credentials missing (AT_USERNAME/AT_API_KEY)
+2025-10-30T00:51:31+00:00 ERROR AT credentials missing (AT_USERNAME/AT_API_KEY)
+2025-10-30T00:53:13+00:00 ERROR AT credentials missing (AT_USERNAME/AT_API_KEY)
+2025-10-30T00:56:05+00:00 ERROR AT credentials missing (AT_USERNAME/AT_API_KEY)
+2025-10-30T01:02:35+00:00 ERROR AT credentials missing (AT_USERNAME/AT_API_KEY)
+2025-10-30T01:07:33+00:00 ERROR AT credentials missing (AT_USERNAME/AT_API_KEY)
+2025-10-30T01:15:25+00:00 ERROR AT credentials missing (ladyd/atsk_553887c631a21ec3d43c608269b1c5705a3a760b10b4b0b1b9595b03b345c54caacbe7c7) env_username=false env_api=false
+2025-10-30T01:20:07+00:00 OK to=+22896097384 res=array (
+  'status' => 'success',
+  'data' => 
+  (object) array(
+     'SMSMessageData' => 
+    (object) array(
+       'Message' => 'Sent to 1/1 Total Cost: XOF 28.2757',
+       'Recipients' => 
+      array (
+        0 => 
+        (object) array(
+           'cost' => 'USD 0.0500',
+           'messageId' => 'ATXid_9c6f5a99a3213f55e725bc67a825bd28',
+           'messageParts' => 1,
+           'number' => '+22896097384',
+           'status' => 'Success',
+           'statusCode' => 100,
+        ),
+      ),
+    ),
+  ),
+)
+2025-10-30T01:26:26+00:00 OK to=+22896097384 res=array (
+  'status' => 'success',
+  'data' => 
+  (object) array(
+     'SMSMessageData' => 
+    (object) array(
+       'Message' => 'Sent to 1/1 Total Cost: XOF 28.2757',
+       'Recipients' => 
+      array (
+        0 => 
+        (object) array(
+           'cost' => 'USD 0.0500',
+           'messageId' => 'ATXid_33f5764ca940da3b9b7585a3a48ddd4b',
+           'messageParts' => 1,
+           'number' => '+22896097384',
+           'status' => 'Success',
+           'statusCode' => 100,
+        ),
+      ),
+    ),
+  ),
+)

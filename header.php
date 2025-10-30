@@ -88,7 +88,8 @@
                       <ul class="dropdown-menu">
                         <li><a href="admin/login.php">Admin</a></li>
                         <li><a href="login.php">User</a></li>
-                        <li><a href="artisan/login.php">Artisan</a></li>
+                        <li><a href="livreurs/login.php">Livreur</a></li>
+                        <li><a href="artisans/login.php">Artisan</a></li>
                       </ul>
                       </li>
                         <!-- Quand je suis connecté je dois voir mon nom et mes informations -->
@@ -100,7 +101,7 @@
                 </div>
                 <!-- END TOP BAR MENU -->
             </div>
-        </div>        
+        </div>
     </div>
     <!-- END TOP BAR -->
 

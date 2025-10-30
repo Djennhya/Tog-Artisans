@@ -1,54 +1,5 @@
 <?php include 'header.php'; ?>
 
-<!-- Head BEGIN -->
-<head>
-  <meta charset="utf-8">
-  <title>Men category | Metronic Shop UI</title>
-
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
-  <meta content="Metronic Shop UI description" name="description">
-  <meta content="Metronic Shop UI keywords" name="keywords">
-  <meta content="keenthemes" name="author">
-
-  <meta property="og:site_name" content="-CUSTOMER VALUE-">
-  <meta property="og:title" content="-CUSTOMER VALUE-">
-  <meta property="og:description" content="-CUSTOMER VALUE-">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="-CUSTOMER VALUE-"><!-- link to image for socio -->
-  <meta property="og:url" content="-CUSTOMER VALUE-">
-
-  <link rel="shortcut icon" href="favicon.ico">
-
-  <!-- Fonts START -->
-  <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|PT+Sans+Narrow|Source+Sans+Pro:200,300,400,600,700,900&amp;subset=all" rel="stylesheet" type="text/css"> 
-  <!-- Fonts END -->
-
-  <!-- Global styles START -->          
-  <link href="assets/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-  <link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Global styles END --> 
-   
-  <!-- Page level plugin styles START -->
-  <link href="assets/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet">
-  <link href="assets/plugins/owl.carousel/assets/owl.carousel.css" rel="stylesheet">
-  <link href="assets/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css">
-  <link href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"><!-- for slider-range -->
-  <link href="assets/plugins/rateit/src/rateit.css" rel="stylesheet" type="text/css">
-  <!-- Page level plugin styles END -->
-
-  <!-- Theme styles START -->
-  <link href="assets/pages/css/components.css" rel="stylesheet">
-  <link href="assets/corporate/css/style.css" rel="stylesheet">
-  <link href="assets/pages/css/style-shop.css" rel="stylesheet" type="text/css">
-  <link href="assets/corporate/css/style-responsive.css" rel="stylesheet">
-  <link href="assets/corporate/css/themes/red.css" rel="stylesheet" id="style-color">
-  <link href="assets/corporate/css/custom.css" rel="stylesheet">
-  <!-- Theme styles END -->
-</head>
-<!-- Head END -->
-
 <!-- Body BEGIN -->
 <body class="ecommerce">
 
@@ -137,6 +88,30 @@ if (mysqli_num_rows($result) > 0) {
 }
 mysqli_close($conn);
 ?>
+
+<!-- Affichage de produits en 3D (peut être ajouté ici) -->
+<div id="viewer3D" style="width:100%; height:400px;"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+<script>
+// Initialisation de la scène 3D
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, 400);
+document.getElementById('viewer3D').appendChild(renderer.domElement);
+var geometry = new THREE.BoxGeometry();
+var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+var cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+camera.position.z = 5;
+var animate = function () {
+    requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    renderer.render(scene, camera);
+};
+animate();
+</script>
 </div>
             <!-- END PRODUCT LIST -->
           </div>
@@ -146,7 +121,7 @@ mysqli_close($conn);
       </div>
     </div>
 
- <!-- BEGIN STEPS -->
+<!-- BEGIN STEPS -->
     <div class="steps-block steps-block-red">
       <div class="container">
         <div class="row">
