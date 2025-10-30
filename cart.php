@@ -1,6 +1,7 @@
 <?php
 session_start();
 ?>
+<? include("../admin/config.php"); ?>
 <?php include("header.php"); ?>
 <!-- Body BEGIN -->
 <body class="ecommerce">

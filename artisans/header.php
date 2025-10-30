@@ -9,6 +9,28 @@
 	<link rel="stylesheet" href="assets/css/ready.css">
 	<link rel="stylesheet" href="assets/css/demo.css">
 </head>
+<?php
+$displayName = 'Artisan';
+if (isset($_SESSION['id_user'])) {
+	$uid = (int) $_SESSION['id_user'];
+	$res = mysqli_query($conn, "SELECT nom_user FROM users WHERE id_user = $uid LIMIT 1");
+	if ($res && $r = mysqli_fetch_assoc($res)) {
+		$displayName = $r['nom_user'];
+	}
+} elseif (isset($_SESSION['2fa_confirmed_user'])) {
+	$uid = (int) $_SESSION['2fa_confirmed_user'];
+	$res = mysqli_query($conn, "SELECT nom_user FROM users WHERE id_user = $uid LIMIT 1");
+	if ($res && $r = mysqli_fetch_assoc($res)) {
+		$displayName = $r['nom_user'];
+	}
+} elseif (isset($_SESSION['pending_2fa_user'])) {
+	$uid = (int) $_SESSION['pending_2fa_user'];
+	$res = mysqli_query($conn, "SELECT nom_user FROM users WHERE id_user = $uid LIMIT 1");
+	if ($res && $r = mysqli_fetch_assoc($res)) {
+		$displayName = $r['nom_user'];
+	}
+}
+?>
 <body>
 	<div class="wrapper">
 		<div class="main-header">
@@ -51,15 +73,14 @@
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false"> <img src="assets/img/woman.png" alt="user-img" width="36" class="img-circle"><span >Djénnhya SANZE</span></span> </a>
+							<a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#" aria-expanded="false"> 
+							<img src="assets/img/woman.png" alt="user-img" width="36" class="img-circle">
+							<span><?php echo htmlspecialchars($displayName); ?></span></a>
 							<ul class="dropdown-menu dropdown-user">
 								<li>
 									<div class="user-box">
 										<div class="u-img"><img src="assets/img/woman.png" alt="user"></div>
 										<div class="u-text">
-											<h4>Djénnhya SANZE</h4>
-											<p class="text-muted">togartisans@gmail.com</p><a href="profile.php" class="btn btn-rounded btn-danger btn-sm">Mon profil</a></div>
-										</div>
 									</li>
 									<div class="dropdown-divider"></div>
 									<a class="dropdown-item" href="#"><i class="ti-email"></i>Messages</a>

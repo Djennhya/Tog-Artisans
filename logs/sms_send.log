@@ -49,3 +49,108 @@
     ),
   ),
 )
+2025-10-30T02:48:07+00:00 OK to=+22870189098 res=array (
+  'status' => 'success',
+  'data' => 
+  (object) array(
+     'SMSMessageData' => 
+    (object) array(
+       'Message' => 'Sent to 0/1 Total Cost: 0',
+       'Recipients' => 
+      array (
+        0 => 
+        (object) array(
+           'cost' => '0',
+           'messageId' => 'None',
+           'number' => '+22870189098',
+           'status' => 'InsufficientBalance',
+           'statusCode' => 405,
+        ),
+      ),
+    ),
+  ),
+)
+2025-10-30T02:51:07+00:00 OK to=+22870189098 res=array (
+  'status' => 'success',
+  'data' => 
+  (object) array(
+     'SMSMessageData' => 
+    (object) array(
+       'Message' => 'Sent to 0/1 Total Cost: 0',
+       'Recipients' => 
+      array (
+        0 => 
+        (object) array(
+           'cost' => '0',
+           'messageId' => 'None',
+           'number' => '+22870189098',
+           'status' => 'InsufficientBalance',
+           'statusCode' => 405,
+        ),
+      ),
+    ),
+  ),
+)
+2025-10-30T16:01:01+00:00 OK to=+22896097384 res=array (
+  'status' => 'success',
+  'data' => 
+  (object) array(
+     'SMSMessageData' => 
+    (object) array(
+       'Message' => 'Sent to 0/1 Total Cost: 0',
+       'Recipients' => 
+      array (
+        0 => 
+        (object) array(
+           'cost' => '0',
+           'messageId' => 'None',
+           'number' => '+22896097384',
+           'status' => 'InsufficientBalance',
+           'statusCode' => 405,
+        ),
+      ),
+    ),
+  ),
+)
+2025-10-30T16:05:55+00:00 OK to=+22896097384 res=array (
+  'status' => 'success',
+  'data' => 
+  (object) array(
+     'SMSMessageData' => 
+    (object) array(
+       'Message' => 'Sent to 0/1 Total Cost: 0',
+       'Recipients' => 
+      array (
+        0 => 
+        (object) array(
+           'cost' => '0',
+           'messageId' => 'None',
+           'number' => '+22896097384',
+           'status' => 'InsufficientBalance',
+           'statusCode' => 405,
+        ),
+      ),
+    ),
+  ),
+)
+2025-10-30T16:11:58+00:00 OK to=+22896097384 res=array (
+  'status' => 'success',
+  'data' => 
+  (object) array(
+     'SMSMessageData' => 
+    (object) array(
+       'Message' => 'Sent to 0/1 Total Cost: 0',
+       'Recipients' => 
+      array (
+        0 => 
+        (object) array(
+           'cost' => '0',
+           'messageId' => 'None',
+           'number' => '+22896097384',
+           'status' => 'InsufficientBalance',
+           'statusCode' => 405,
+        ),
+      ),
+    ),
+  ),
+)

@@ -81,6 +81,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
+<!-- css de la page login avec un beau design -->
+<style>
+* {
+        margin: 0; 
+        padding: 0; 
+        box-sizing: 
+        border-box; }
+body { 
+    font-family: 'Roboto', 
+    sans-serif; 
+    background: #f5f5f5; }
+.container { 
+    background: #fff; 
+    padding: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); },
+    input[type="text"] 
+    { 
+      width: 100%; 
+      padding: 10px; 
+      margin: 10px 0; 
+      border: 1px solid #ccc; 
+      border-radius: 4px; }, 
+    input[type="password"] 
+    { width: 100%; 
+      padding: 10px; 
+      margin: 10px 0; 
+      border: 1px solid #ccc; 
+      border-radius: 4px; }      
+      button { width: 100%; 
+        padding: 10px; 
+        background: #28a745; 
+        border: none; color: #fff; 
+        border-radius: 4px; 
+        cursor: pointer; }
+      button:hover { 
+        background: #218838; }
+</style>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -91,11 +130,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
 <div class="container" style="max-width:520px;margin-top:80px;">
-    <h3 class="mb-3">Connexion</h3>
+    <h3 class="mb-3"> PAGE DE CONNEXION TOG'ARTISANS</h3>
+    <div class="text-center mb-3">
+    <img src="assets/img/togartisans.png" alt="Logo" style="max-width:120px;">
+      </div>
+    <span>Veuillez vous connecter pour accéder à votre compte.</span>
+    <hr>
     <?php if (!empty($login_err)) echo '<div class="alert alert-danger">'.htmlspecialchars($login_err).'</div>'; ?>
     <form method="post" action="">
         <div class="form-group">
-            <label>Nom ou email</label>
+            <label>Entrez votre email </label>
             <input type="text" name="identifier" class="form-control <?php echo (!empty($identifier_err)) ? 'is-invalid' : ''; ?>" value="<?php echo htmlspecialchars($identifier); ?>">
             <div class="invalid-feedback"><?php echo $identifier_err; ?></div>
         </div>
@@ -105,6 +149,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="invalid-feedback"><?php echo $password_err; ?></div>
         </div>
         <button class="btn btn-primary">Se connecter</button>
+        <a href="forgot_password.php" class="btn btn-link">Mot de passe oublié?</a>
+        <p class="mt-3">Pas encore de compte ? <a href="register.php">Inscrivez-vous ici</a>.</p>
     </form>
 </div>
 </body>

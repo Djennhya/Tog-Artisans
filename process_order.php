@@ -1,81 +1,100 @@
-<!-- process-order.php -->
 <?php
-require_once __DIR__ . '/admin/config.php';
-// Vérifs basiques
-if (!isset($_SESSION['user_id'])) {
-    die('Vous devez être connecté.');
-}
-if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-    die('Panier vide.');
-}
+session_start();
+require_once __DIR__ . '/admin/config.php'; // contient $link
 
-$user_id = (int) $_SESSION['user_id'];
-$frais_livraison = 500; // ou calcul dynamique
+$log = __DIR__ . '/logs/order_debug.log';
+if (!is_dir(dirname($log))) mkdir(dirname($log), 0777, true);
 
-// Connexion (adapte si tu utilises config.php pour ça)
-$conn = mysqli_connect('localhost', 'root', '', 'togartisans');
-if (!$conn) {
-    error_log('DB connect error: ' . mysqli_connect_error());
-    die('Erreur DB.');
-}
-
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-try {
-    mysqli_begin_transaction($conn);
-
-    // Calcul total à partir du panier (utiliser prix stocké en session si existant)
-    $total_general = 0;
-    foreach ($_SESSION['cart'] as $id_product => $item) {
-        if (is_int($item) || !is_array($item)) {
-            $quantity = (int)$item;
-            // si pas de prix stocké, récupérer le prix en DB
-            $prix_unitaire = 0;
-            $q = mysqli_query($conn, "SELECT prix_product FROM products WHERE id_product = " . (int)$id_product);
-            if ($r = mysqli_fetch_assoc($q)) $prix_unitaire = (float)$r['prix_product'];
-        } else {
-            $quantity = (int)$item['quantity'];
-            $prix_unitaire = (float)($item['prix'] ?? 0);
-            if ($prix_unitaire <= 0) {
-                $q = mysqli_query($conn, "SELECT prix_product FROM products WHERE id_product = " . (int)$id_product);
-                if ($r = mysqli_fetch_assoc($q)) $prix_unitaire = (float)$r['prix_product'];
-            }
-        }
-        $total_general += $quantity * $prix_unitaire;
-    }
-
-    // récupération mode paiement / adresse (provenir du formulaire checkout)
-    $mode_paiement = isset($_POST['mode_paiement']) ? mysqli_real_escape_string($conn, $_POST['mode_paiement']) : 'inconnu';
-    $adresse_livraison = isset($_POST['adresse_livraison']) ? mysqli_real_escape_string($conn, $_POST['adresse_livraison']) : '';
-
-    // si adresse manquante, tenter de la prendre depuis le profil user
-    if (empty($adresse_livraison)) {
-        $q = mysqli_query($conn, "SELECT adresse_user FROM users WHERE id_user = $user_id LIMIT 1");
-        if ($r = mysqli_fetch_assoc($q)) {
-            $adresse_livraison = $r['adresse_user'] ?? '';
-        }
-    }
-
-    $statut = 'pending';
-
-    // Insert commande (adapté à ta table commandes)
-    $stmt = $conn->prepare("INSERT INTO commandes (id_user, total, statut, mode_paiement, adresse_livraison, date_commande) VALUES (?, ?, ?, ?, ?, NOW())");
-    $stmt->bind_param('idsss', $user_id, $total_general, $statut, $mode_paiement, $adresse_livraison);
-    $stmt->execute();
-    $order_id = $conn->insert_id;
-    $stmt->close();
-
-    // vider panier
-    unset($_SESSION['cart']);
-
-    // affichage succès (ou redirection)
-    header('Location: order_success.php?order_id=' . $order_id);
+// === Vérif session utilisateur ===
+if (empty($_SESSION['user_id'])) {
+    file_put_contents($log, date('c') . " ERROR: no user session\n", FILE_APPEND);
+    header('Location: login.php');
     exit;
-} catch (Exception $e) {
-    mysqli_rollback($conn);
-    error_log("Order error: " . $e->getMessage());
-    // Afficher message d'erreur pour debug (supprimer en prod)
-    echo "<div class='container text-center'><img src='assets/images/fail.png' alt='Échec'><p>Erreur: " . htmlspecialchars($e->getMessage()) . "</p></div>";
+}
+
+$user_id = (int)$_SESSION['user_id'];
+
+// === Vérif panier en session ===
+if (empty($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
+    file_put_contents($log, date('c') . " ERROR: empty session cart for user {$user_id}\n", FILE_APPEND);
+    header('Location: cart.php');
+    exit;
+}
+
+$cart_items = $_SESSION['cart'];
+
+// === Champs du formulaire ===
+$mode_paiement = trim($_POST['mode_paiement'] ?? 'cash');
+$adresse_livraison = trim($_POST['adresse_livraison'] ?? '');
+$date_livraison = trim($_POST['date_livraison'] ?? null);
+$id_livreur = isset($_POST['id_livreur']) ? (int)$_POST['id_livreur'] : 0;
+$id_artisan = isset($_POST['id_artisan']) ? (int)$_POST['id_artisan'] : 0;
+$statut = 'en_attente';
+
+// === Calcul total et shop ===
+$total = 0.0;
+$id_shop = 0;
+
+foreach ($cart_items as $product_id => $item) {
+    $qty = (int)($item['quantite'] ?? $item['qty'] ?? 0);
+    $price = (float)($item['prix_panier'] ?? $item['price'] ?? $item['prix'] ?? 0);
+    $total += $qty * $price;
+
+    if (!empty($item['id_shop'])) {
+        $id_shop = (int)$item['id_shop'];
+    }
+}
+
+if ($total <= 0) {
+    file_put_contents($log, date('c') . " ERROR: total=0 for user {$user_id}\n", FILE_APPEND);
+    header('Location: cart.php');
+    exit;
+}
+
+// === Enregistrer la commande ===
+try {
+    mysqli_begin_transaction($link);
+
+    $sql = "INSERT INTO commandes 
+        (id_user, id_shop, total, statut, mode_paiement, adresse_livraison, date_livraison, date_commande, id_artisan, id_livreur)
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)";
+
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, "iidssssii",
+        $user_id, $id_shop, $total, $statut, $mode_paiement,
+        $adresse_livraison, $date_livraison, $id_artisan, $id_livreur
+    );
+
+    if (!mysqli_stmt_execute($stmt)) {
+        throw new Exception("Insert commande failed: " . mysqli_error($link));
+    }
+
+    $order_id = mysqli_insert_id($link);
+
+    // Enregistrement des détails si tu veux créer une table commande_details
+    $stmt_detail = mysqli_prepare($link, "INSERT INTO commande_details (id_commande, produit_id, quantite, prix_unitaire) VALUES (?, ?, ?, ?)");
+    foreach ($cart_items as $product_id => $item) {
+        $qty = (int)($item['quantite'] ?? $item['qty'] ?? 0);
+        $price = (float)($item['prix_panier'] ?? $item['price'] ?? $item['prix'] ?? 0);
+        mysqli_stmt_bind_param($stmt_detail, "iiid", $order_id, $product_id, $qty, $price);
+        mysqli_stmt_execute($stmt_detail);
+    }
+    mysqli_stmt_close($stmt_detail);
+
+    mysqli_commit($link);
+
+    // Vider le panier
+    unset($_SESSION['cart']);
+    $_SESSION['last_order_id'] = $order_id;
+    $_SESSION['last_order_total'] = $total;
+
+    header('Location: order_success.php');
+    exit;
+
+} catch (Throwable $e) {
+    mysqli_rollback($link);
+    file_put_contents($log, date('c') . " ORDER ERROR user={$user_id} err=" . $e->getMessage() . "\n", FILE_APPEND);
+    echo "Erreur lors de l'enregistrement de la commande. Veuillez réessayer plus tard.";
     exit;
 }
 ?>

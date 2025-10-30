@@ -1,0 +1,27 @@
+2025-10-30T04:06:42+00:00 ORDER ERROR user=54 err=Unknown column 'date_livraison' in 'field list'
+2025-10-30T04:07:12+00:00 ORDER ERROR user=54 err=Unknown column 'date_livraison' in 'field list'
+2025-10-30T04:27:17+00:00 ORDER ERROR user=54 err=Unknown column 'date_livraison' in 'field list'2025-10-30T04:49:55+00:00 ORDER ERROR user=54 err=Unknown column 'date_livraison' in 'field list'
+2025-10-30T04:50:06+00:00 ORDER ERROR user=54 err=Unknown column 'date_livraison' in 'field list'
+2025-10-30T18:59:19+00:00 ORDER ERROR user=64 err=Unknown column 'date_livraison' in 'field list'
+2025-10-30T19:01:04+00:00 ORDER ERROR user=64 err=Unknown column 'date_livraison' in 'field list'
+2025-10-30T19:13:19+00:00 DEBUG CART=Array
+(
+    [9] => Array
+        (
+            [quantity] => 1
+            [prix] => 8000
+        )
+
+)
+
+2025-10-30T19:13:19+00:00 ORDER ERROR user=64 err=Unknown column 'date_livraison' in 'field list'
+2025-10-30T19:18:17+00:00 ORDER ERROR user=64 err=Cannot add or update a child row: a foreign key constraint fails (`togartisans`.`commandes`, CONSTRAINT `fk_commandes_livreur` FOREIGN KEY (`id_livreur`) REFERENCES `users` (`id_user`))
+2025-10-30T19:18:27+00:00 ORDER ERROR user=64 err=Cannot add or update a child row: a foreign key constraint fails (`togartisans`.`commandes`, CONSTRAINT `fk_commandes_livreur` FOREIGN KEY (`id_livreur`) REFERENCES `users` (`id_user`))
+2025-10-30T19:28:17+00:00 ORDER ERROR user=64 err=Cannot add or update a child row: a foreign key constraint fails (`togartisans`.`commandes`, CONSTRAINT `fk_commandes_livreur` FOREIGN KEY (`id_livreur`) REFERENCES `users` (`id_user`))
+2025-10-30T19:31:01+00:00 ERROR total=0 for user 64
+2025-10-30T19:32:33+00:00 ERROR total=0 for user 64
+2025-10-30T19:35:47+00:00 ERROR total=0 for user 64
+2025-10-30T20:15:52+00:00 ERROR: empty cart in DB for user 64
+2025-10-30T20:18:08+00:00 ERROR: empty cart in DB for user 64
+2025-10-30T20:19:37+00:00 ERROR: total=0 for user 64
+2025-10-30T20:23:47+00:00 ERROR: total=0 for user 64

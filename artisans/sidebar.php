@@ -5,7 +5,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 // Nom à afficher par défaut
-$displayName = 'Utilisateur';
+$displayName = 'Artisan';
 
 // n'afficher le nom que pour un artisan
 if (!empty($_SESSION['role']) && $_SESSION['role'] === 'artisan') {

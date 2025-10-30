@@ -1,10 +1,8 @@
 <?php
 session_start();
 require_once "admin/config.php";
-// send_sms est dans /includes à la racine → remonter d'un niveau
-require_once __DIR__ . '/includes/send_sms.php';
+require_once __DIR__ . '/includes/send_email.php'; // notre fonction d'envoi
 
-// s'assurer de la connexion mysqli dans $link
 if (!isset($link) || !$link) {
     $link = mysqli_connect('localhost', 'root', '', 'togartisans');
     if (!$link) die('DB connect error: ' . mysqli_connect_error());
@@ -13,25 +11,8 @@ if (!isset($link) || !$link) {
 $nom_user = $email_user = $phone_user = $password_user = $confirm_password = $adresse_user = $role = "";
 $nom_err = $email_err = $phone_err = $password_err = $confirm_password_err = $adresse_err = $role_err = "";
 
-// helper logs dir
-$logDir = __DIR__ . '/../logs';
-if (!is_dir($logDir)) mkdir($logDir, 0777, true);
-
-// déterminer dynamiquement le nom de la colonne téléphone dans la table users
-$phone_column = 'phone';
-$res_check = mysqli_query($link, "SHOW COLUMNS FROM users LIKE 'phone'");
-if (!$res_check || mysqli_num_rows($res_check) === 0) {
-    $res_check2 = mysqli_query($link, "SHOW COLUMNS FROM users LIKE 'phone_user'");
-    if ($res_check2 && mysqli_num_rows($res_check2) > 0) {
-        $phone_column = 'phone_user';
-    } else {
-        // si aucune des deux n'existe, arrêter et logguer pour debugging
-        file_put_contents(__DIR__ . '/../logs/register_error.log', date('c') . " ERROR: colonne phone introuvable dans users\n", FILE_APPEND);
-        die('Configuration DB incorrecte : colonne téléphone introuvable. Vérifiez la table users.');
-    }
-}
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
     // NOM
     if (empty(trim($_POST["nom_user"]))) {
         $nom_err = "Veuillez entrer votre nom.";
@@ -60,29 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (empty(trim($_POST["phone_user"]))) {
         $phone_err = "Veuillez entrer votre numéro de téléphone.";
     } else {
-        $phone_raw = trim($_POST["phone_user"]);
-        $digits = preg_replace('/\D/', '', $phone_raw);
-        if (strlen($digits) === 8) {
-            $phone_norm = '+228' . $digits;
-        } else {
-            $phone_norm = (strpos($phone_raw, '+') === 0) ? $phone_raw : ('+' . $digits);
-        }
-
-        $sql = "SELECT id_user FROM users WHERE {$phone_column} = ?";
-        if ($stmt = mysqli_prepare($link, $sql)) {
-            mysqli_stmt_bind_param($stmt, "s", $phone_norm);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_store_result($stmt);
-            if (mysqli_stmt_num_rows($stmt) > 0) {
-                $phone_err = "Ce numéro est déjà utilisé.";
-            } else {
-                $phone_user = $phone_norm;
-            }
-            mysqli_stmt_close($stmt);
-        } else {
-            file_put_contents(__DIR__ . '/../logs/register_error.log', date('c') . " PREPARE ERR on phone check: " . mysqli_error($link) . "\n", FILE_APPEND);
-            $phone_err = "Erreur serveur (vérification téléphone).";
-        }
+        $phone_user = trim($_POST["phone_user"]);
     }
 
     // MOT DE PASSE
@@ -94,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $password_user = trim($_POST["password_user"]);
     }
 
-    // CONFIRMATION MOT DE PASSE
+    // CONFIRMATION
     if (empty(trim($_POST["confirm_password"]))) {
         $confirm_password_err = "Veuillez confirmer le mot de passe.";
     } else {
@@ -111,18 +70,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $adresse_user = trim($_POST["adresse_user"]);
     }
 
-    // ROLE
+    // RÔLE
     if (empty($_POST["role"])) {
         $role_err = "Veuillez choisir un rôle.";
     } else {
         $role = $_POST["role"];
     }
 
-    // Si pas d'erreurs → insertion
+    // Si pas d'erreurs
     if (empty($nom_err) && empty($email_err) && empty($phone_err) && empty($password_err) && empty($confirm_password_err) && empty($adresse_err) && empty($role_err)) {
 
-        $cols = "nom_user, email_user, {$phone_column}, password_user, adresse_user, role";
-        $sql = "INSERT INTO users ($cols) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (nom_user, email_user, phone_user, password_user, adresse_user, role) VALUES (?, ?, ?, ?, ?, ?)";
         if ($stmt = mysqli_prepare($link, $sql)) {
             $hashed = password_hash($password_user, PASSWORD_DEFAULT);
             mysqli_stmt_bind_param($stmt, "ssssss", $nom_user, $email_user, $phone_user, $hashed, $adresse_user, $role);
@@ -130,53 +88,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (mysqli_stmt_execute($stmt)) {
                 $new_user_id = mysqli_insert_id($link);
 
-                // $phone_user est déjà normalisé plus haut -> réutiliser
-                // Générer code 2FA
+                // Générer un code aléatoire
                 $code_2fa = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
                 $expires = date('Y-m-d H:i:s', time() + 300);
 
-                // Mettre à jour la table users avec le code_2fa (si colonnes existent)
+                // Enregistrer le code en base
                 $upd_sql = "UPDATE users SET code_2fa = ?, code_2fa_expires = ? WHERE id_user = ?";
-                if ($upd_stmt = @mysqli_prepare($link, $upd_sql)) {
-                    mysqli_stmt_bind_param($upd_stmt, "ssi", $code_2fa, $expires, $new_user_id);
-                    mysqli_stmt_execute($upd_stmt);
-                    mysqli_stmt_close($upd_stmt);
-                }
+                $upd_stmt = mysqli_prepare($link, $upd_sql);
+                mysqli_stmt_bind_param($upd_stmt, "ssi", $code_2fa, $expires, $new_user_id);
+                mysqli_stmt_execute($upd_stmt);
 
-                // Envoi du SMS via Africa's Talking (utilise $phone_user)
-                if (!empty($phone_user)) {
-                    $message = "Tog'Artisans - Votre code de vérification : $code_2fa";
-                    $res = send_sms($phone_user, $message);
-                    file_put_contents(__DIR__ . '/../logs/sms_send.log', date('c') . " REGISTER to={$phone_user} ok=" . ($res['ok'] ? '1' : '0') . " msg=" . json_encode($res['msg']) . PHP_EOL, FILE_APPEND);
-                } else {
-                    file_put_contents(__DIR__ . '/../logs/sms_send.log', date('c') . " REGISTER no phone for user {$new_user_id}\n", FILE_APPEND);
-                }
+                // Envoi du mail dynamique
+                $subject = "Code de validation sur Tog'Artisans";
+                $body = "
+                <h2>Bonjour $nom_user,</h2>
+                <p>Merci de vous être inscrit sur <strong>Tog'Artisans</strong>.</p>
+                <p>Voici votre code de confirmation :</p>
+                <h1 style='color:#2b6cb0;'>$code_2fa</h1>
+                <p>Ce code expirera dans 5 minutes.</p>
+                ";
+                send_email($email_user, $subject, $body);
 
-                // Stocker pending 2FA en session et rediriger vers la page de vérification SMS
+                // Session
                 $_SESSION['pending_2fa_user'] = $new_user_id;
+                $_SESSION['pending_2fa_email'] = $email_user;
                 $_SESSION['pending_2fa_code'] = $code_2fa;
                 $_SESSION['pending_2fa_expires'] = $expires;
-                $_SESSION['pending_2fa_phone'] = $phone_user;
-                $_SESSION['pending_2fa_name'] = $nom_user;
-                $_SESSION['pending_2fa_role'] = $role;
 
-                mysqli_stmt_close($stmt);
-                mysqli_close($link);
-
-                // redirection vers la page de vérification SMS (au même niveau que register.php)
                 header("Location: verify_2fa.php");
                 exit;
             } else {
-                $error_msg = mysqli_error($link);
-                file_put_contents($logDir . '/register_error.log', date('c') . " INSERT ERR: " . $error_msg . PHP_EOL, FILE_APPEND);
-                echo "Erreur lors de l'inscription. Contactez l'administrateur.";
+                echo "Erreur lors de l'inscription.";
             }
             mysqli_stmt_close($stmt);
-        } else {
-            echo "Erreur préparation requête.";
         }
     }
-    // fermeture connexion
+
     mysqli_close($link);
 }
 ?>
@@ -186,77 +133,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <title>Inscription - Tog'Artisans</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body { font: 14px sans-serif; }
-        .wrapper {
-            width: 650px;
-            padding: 30px;
-            margin: auto;
-            margin-top: 80px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-        }
-    </style>
 </head>
 <body>
-<div class="wrapper">
-    <h2><center>PAGE D'INSCRIPTION</center></h2>
-    <p><center>Veuillez remplir ce formulaire pour créer un compte.</center></p>
-
-    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="text-center">Inscription Tog'Artisans</h2>
+    <form method="post" action="">
         <div class="form-group">
-            <label>Nom :</label>
-            <input type="text" name="nom_user" class="form-control" value="<?php echo htmlspecialchars($nom_user); ?>" required>
-            <span class="text-danger"><?php echo $nom_err; ?></span>
+            <label>Nom</label>
+            <input type="text" name="nom_user" class="form-control" required>
         </div>
-
         <div class="form-group">
-            <label>Email :</label>
-            <input type="email" name="email_user" class="form-control" value="<?php echo htmlspecialchars($email_user); ?>" required>
-            <span class="text-danger"><?php echo $email_err; ?></span>
+            <label>Email</label>
+            <input type="email" name="email_user" class="form-control" required>
         </div>
-
         <div class="form-group">
-            <label>Téléphone :</label>
-            <input type="text" name="phone_user" class="form-control" value="<?php echo htmlspecialchars($phone_user); ?>" required>
-            <span class="text-danger"><?php echo $phone_err; ?></span>
+            <label>Téléphone</label>
+            <input type="text" name="phone_user" class="form-control" required>
         </div>
-
         <div class="form-group">
-            <label>Mot de passe :</label>
+            <label>Mot de passe</label>
             <input type="password" name="password_user" class="form-control" required>
-            <span class="text-danger"><?php echo $password_err; ?></span>
         </div>
-
         <div class="form-group">
-            <label>Confirmer le mot de passe :</label>
+            <label>Confirmer</label>
             <input type="password" name="confirm_password" class="form-control" required>
-            <span class="text-danger"><?php echo $confirm_password_err; ?></span>
         </div>
-
         <div class="form-group">
-            <label>Adresse :</label>
-            <input type="text" name="adresse_user" class="form-control" value="<?php echo htmlspecialchars($adresse_user); ?>" required>
-            <span class="text-danger"><?php echo $adresse_err; ?></span>
+            <label>Adresse</label>
+            <input type="text" name="adresse_user" class="form-control" required>
         </div>
-
         <div class="form-group">
-            <label>Rôle :</label>
+            <label>Rôle</label>
             <select name="role" class="form-control" required>
-                <option value="">Sélectionnez votre rôle</option>
-                <option value="client" <?php if($role=='client') echo 'selected'; ?>>Client</option>
-                <option value="artisan" <?php if($role=='artisan') echo 'selected'; ?>>Artisan</option>
-                <option value="livreur" <?php if($role=='livreur') echo 'selected'; ?>>Livreur</option>
+                <option value="">Choisissez...</option>
+                <option value="client">Client</option>
+                <option value="artisan">Artisan</option>
+                <option value="livreur">Livreur</option>
             </select>
-            <span class="text-danger"><?php echo $role_err; ?></span>
         </div>
-
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">S'inscrire</button>
-            <button type="reset" class="btn btn-secondary ml-2">Réinitialiser</button>
-        </div>
-
+        <button type="submit" class="btn btn-primary btn-block">S'inscrire</button>
     </form>
 </div>
 </body>
