@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 // redirection selon rôle
                 if ($user['role'] === 'artisan') header("Location: artisans/index.php");
-                elseif ($user['role'] === 'livreur') header("Location: livreurs/index.php");
+                elseif ($user['role'] === 'livreur') header("Location: livreurs/dashboard.php");
                 else header("Location: index.php");
                 exit;
             } else {

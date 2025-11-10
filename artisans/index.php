@@ -4,7 +4,7 @@
 <div class="main-panel">
 				<div class="content">
 					<div class="container-fluid">
-						<h4 class="page-title">Tableau de bord Tog'Artisans</h4>
+						<h4 class="page-title">TABLEAU DE BORD ARTISANS Tog'Artisans</h4>
 						<div class="row">
 							<div class="col-md-3">
 								<div class="card card-stats card-warning">
@@ -310,7 +310,7 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body text-center">									
+				<div class="modal-body text-center">
 					<p>Currently the pro version of the <b>Ready Dashboard</b> Bootstrap is in progress development</p>
 					<p>
 						<b>We'll let you know when it's done</b></p>

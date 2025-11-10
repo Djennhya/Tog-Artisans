@@ -1,1 +1,0 @@
-<!-- Suppression d'un client -->

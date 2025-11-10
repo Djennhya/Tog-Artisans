@@ -76,6 +76,7 @@
           <div class="col-md-12 sale-product">
             <h2>Nos produits</h2>
             <div class="owl-carousel owl-carousel5">
+
               <?php
 $conn = mysqli_connect("localhost", "root", "", "togartisans");
 $sql = "SELECT * FROM products LIMIT 6"; // Limite à 6 produits pour l'accueil
@@ -87,7 +88,7 @@ while($products = mysqli_fetch_assoc($result)) {
             <img src="'.htmlspecialchars($products['img_product']).'" class="img-responsive" alt="'.htmlspecialchars($products['nom_product']).'">
             <div>
               <a href="'.htmlspecialchars($products['img_product']).'" class="btn btn-default fancybox-button">Zoom</a>
-              <a href="products_details.php?id_product='.htmlspecialchars($products['id_product']).'" class="btn btn-default fancybox-fast-view">View</a>
+              <a href="products_details.php?id_product='.htmlspecialchars($products['id_product']).'" class="btn btn-default fancybox-fast-view">Voir</a>
             </div>
           </div>
           <h3><a href="products_details.php?id_product='.htmlspecialchars($products['id_product']).'">'.htmlspecialchars($products['nom_product']).'</a></h3>

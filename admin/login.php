@@ -3,7 +3,7 @@
 
 // Vérifier si l'administrateur est déjà connecté, sinon rediriger vers la page de connexion
 if(isset($_SESSION["admin_loggedin"]) && $_SESSION["admin_loggedin"] === true){
-    header("Location: index.php");
+    header("Location: dashboard.php");
     exit;
 }
 // Inclure le fichier de configuration
